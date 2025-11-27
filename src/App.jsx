@@ -78,84 +78,6 @@ const PRODUCTS = [
 
 // --- COMPONENTES VISUALES ---
 
-// Fondo Animado "Niebla Oscura Visible" (Canvas)
-// Mantenemos el movimiento pero sobre fondo blanco
-const CanvasBackground = () => {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
-    let particles = [];
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    const createParticles = () => {
-      const particleCount = window.innerWidth < 768 ? 15 : 25; 
-      particles = [];
-      for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 250 + 150, 
-          speedX: (Math.random() - 0.5) * 0.6, 
-          speedY: (Math.random() - 0.5) * 0.6,
-          alpha: Math.random() * 0.15 + 0.1, 
-        });
-      }
-    };
-
-    const drawParticles = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(p => {
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
-        gradient.addColorStop(0, `rgba(0, 0, 0, ${p.alpha})`); 
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); 
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        p.x += p.speedX;
-        p.y += p.speedY;
-
-        if (p.x < -p.radius * 2 || p.x > canvas.width + p.radius * 2) p.speedX *= -1;
-        if (p.y < -p.radius * 2 || p.y > canvas.height + p.radius * 2) p.speedY *= -1;
-      });
-
-      animationFrameId = requestAnimationFrame(drawParticles);
-    };
-
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      createParticles();
-    });
-
-    resizeCanvas();
-    createParticles();
-    drawParticles();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return (
-    <canvas 
-      ref={canvasRef} 
-      className="fixed inset-0 z-0 pointer-events-none"
-      style={{ opacity: 1 }} 
-    />
-  );
-};
-
 const Toast = ({ message, onClose }) => (
   <div className="fixed top-24 right-6 z-[60] bg-black text-white px-6 py-4 rounded-none shadow-2xl flex items-center gap-3 animate-slide-left border-l-4 border-white">
     <CheckCircle size={18} className="text-white" />
@@ -281,7 +203,7 @@ export default function OpticaPro() {
   };
 
   return (
-    // CAMBIO IMPORTANTE: bg-white (Blanco puro) en lugar de bg-zinc-50
+    // CAMBIO IMPORTANTE: bg-white (Blanco puro) - Se eliminaron efectos canvas y ruido
     <div className="relative min-h-screen font-sans text-zinc-900 bg-white selection:bg-black selection:text-white pb-0">
       {/* Estilos personalizados */}
       <style>{`
@@ -293,11 +215,6 @@ export default function OpticaPro() {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         html { scroll-behavior: smooth; }
       `}</style>
-
-      {/* Fondo Animado Canvas (Humo) sobre fondo blanco limpio */}
-      <CanvasBackground />
-      
-      {/* ELIMINADO: Fondo Ruido Estático (noise.svg) para evitar el efecto gris sucio */}
       
       {/* NAVBAR */}
       <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled ? 'bg-black/95 backdrop-blur-md py-0' : 'bg-transparent py-4'} border-b border-white/10`}>
